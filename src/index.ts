@@ -1,36 +1,31 @@
 import { Elysia, t } from 'elysia'
 import { cors } from '@elysiajs/cors'
 import { swagger } from '@elysiajs/swagger'
+import { eq } from 'drizzle-orm'
 import { auth } from './lib/auth'
+import { db } from './db/index_db'
+import * as schema from './db/schema'
+
+// --- Response Schemas ---
 
 const UserSchema = t.Object({
     id: t.String(),
     email: t.String(),
     emailVerified: t.Boolean(),
     name: t.String(),
-    createdAt: t.String(),
-    updatedAt: t.String(),
+    createdAt: t.Date(),
+    updatedAt: t.Date(),
     image: t.Optional(t.Nullable(t.String())),
-    
-    role: t.Optional(t.String()),
-    phoneNumber: t.Optional(t.Nullable(t.String())),
-    
-    banned: t.Optional(t.Boolean()),
-    banReason: t.Optional(t.Nullable(t.String())),
-    banExpires: t.Optional(t.Nullable(t.String()))
+    role: t.Optional(t.String())
 })
 
 const SessionSchema = t.Object({
     id: t.String(),
     userId: t.String(),
-    expiresAt: t.String(),
-    
+    expiresAt: t.Date(),
     token: t.String(),
-    createdAt: t.String(),
-    updatedAt: t.String(),
-    
-    ipAddress: t.Optional(t.Nullable(t.String())),
-    userAgent: t.Optional(t.Nullable(t.String()))
+    createdAt: t.Date(),
+    updatedAt: t.Date(),
 })
 
 const AuthResponse = t.Object({
@@ -38,11 +33,19 @@ const AuthResponse = t.Object({
     session: SessionSchema
 })
 
-const taskList: Array<{ id: number, title: string, completed: boolean, createdBy: string }> = []
+const PetSchema = t.Object({
+    id: t.Number(),
+    ownerId: t.String(),
+    name: t.String(),
+    category: t.String(),
+    priceCents: t.Number(),
+    status: t.Nullable(t.String()),
+    createdAt: t.Nullable(t.Date()),
+})
 
+// --- Helper ---
 const forwardToAuth = (request: Request, body: any) => {
     const newBody = typeof body === 'object' ? JSON.stringify(body) : body;
-    
     return auth.handler(new Request(request.url, {
         method: request.method,
         headers: request.headers,
@@ -59,127 +62,115 @@ const app = new Elysia()
   .use(swagger({
     documentation: {
       info: {
-        title: 'Elysia Task API',
+        title: 'Pet Store API',
         version: '1.0.0',
-        description: 'A simple API to demonstrate ElysiaJS + Better Auth'
+        description: 'ElysiaJS + Better Auth + Drizzle ORM Demo'
       },
       tags: [
-        { name: 'Tasks', description: 'Task management endpoints' },
+        { name: 'Pets', description: 'Manage pet catalog' },
         { name: 'Auth', description: 'Authentication endpoints' }
       ]
     }
   }))
-  .decorate('tasks', taskList)
+  
+  // --- Auth Routes ---
   .group('/api/auth', (app) => app
       .guard({ detail: { tags: ['Auth'] } })
-
       .post('/sign-up/email', ({ request, body }) => forwardToAuth(request, body) as any, {
-          detail: { summary: 'Register a new user' },
+          detail: { summary: 'Register new account' },
           body: t.Object({
               name: t.String({ example: 'John Doe' }),
               email: t.String({ format: 'email', example: 'john@example.com' }),
-              password: t.String({ minLength: 8, example: 'secret123' }),
-              image: t.Optional(t.String()),
-              phoneNumber: t.Optional(t.String({ example: '+1234567890' }))
-          }),
-          response: {
-              200: AuthResponse,
-              400: t.Object({ message: t.String() })
-          }
+              password: t.String({ minLength: 8, example: 'SecurePass123!' }),
+          })
       })
-
       .post('/sign-in/email', ({ request, body }) => forwardToAuth(request, body) as any, {
-          detail: { summary: 'Sign in with Email/Password' },
+          detail: { summary: 'Authenticate with email' },
           body: t.Object({
               email: t.String({ format: 'email', example: 'john@example.com' }),
-              password: t.String({ example: 'secret123' }),
-              rememberMe: t.Optional(t.Boolean())
-          }),
-          response: {
-              200: AuthResponse,
-              401: t.Object({ message: t.String() })
-          }
+              password: t.String({ example: 'SecurePass123!' }),
+          })
       })
-
       .post('/sign-out', ({ request }) => auth.handler(request) as any, {
-          detail: { summary: 'Revoke current session' },
-          response: {
-              200: t.Object({ success: t.Boolean() })
+          detail: { 
+            summary: 'Sign out and invalidate session',
+            description: 'Ends the current session and clears authentication cookies.'
           }
       })
-
       .all('/*', ({ request }) => auth.handler(request)) 
   )
 
   // --- Derive User Session ---
   .derive(async ({ request }) => {
     const session = await auth.api.getSession({ headers: request.headers });
-    
     return {
       user: session?.user,
       session: session?.session
     }
   })
 
-  .group('/api/tasks', (app) => app
-    .guard({ detail: { tags: ['Tasks'] } })
+  // --- Pet Catalog Routes ---
+  .group('/api/pets', (app) => app
+    .guard({ detail: { tags: ['Pets'] } })
 
-    // GET /tasks
-    .get('/', ({ tasks }) => tasks, {
-      detail: { summary: 'Get all tasks' },
-      response: t.Array(
-        t.Object({
-          id: t.Number(),
-          title: t.String(),
-          completed: t.Boolean()
-        })
-      )
+    // GET /api/pets - List all pets from DB
+    .get('/', async () => {
+      const allPets = await db.select().from(schema.pets);
+      return allPets;
+    }, {
+      detail: { summary: 'Retrieve full pet catalog' },
+      response: t.Array(PetSchema)
     })
 
-    // POST /tasks
-    .post('/', ({ body, tasks, user, set }) => {
+    // POST /api/pets - Create a pet
+    .post('/', async ({ body, user, set }) => {
       if (!user) {
         set.status = 401
-        return { message: "Unauthorized: You must be logged in" }
+        return { message: "Unauthorized: You must be logged in to list a pet." }
       }
 
-      const newTask = {
-        id: tasks.length + 1,
-        title: body.title,
-        completed: false,
-        createdBy: user.id 
-      }
-      tasks.push(newTask)
-      return newTask
+      const [newPet] = await db.insert(schema.pets).values({
+        name: body.name,
+        category: body.category,
+        priceCents: body.priceCents,
+        ownerId: user.id,
+        status: 'available',
+        attributes: {}
+      }).returning();
+
+      return newPet;
     }, {
-      detail: { summary: 'Create a new task (Requires Auth)' },
+      detail: { summary: 'Create a new pet listing' },
       body: t.Object({
-        title: t.String({ minLength: 3, example: 'Buy groceries' })
+        name: t.String({ minLength: 2, example: 'Golden Retriever' }),
+        category: t.String({ example: 'Dogs' }),
+        priceCents: t.Number({ minimum: 0, example: 50000 })
       }),
       response: {
-        200: t.Object({
-          id: t.Number(),
-          title: t.String(),
-          completed: t.Boolean()
-        }),
+        200: PetSchema,
         401: t.Object({ message: t.String() })
       }
     })
 
-    // GET /tasks/:id
-    .get('/:id', ({ params, tasks, set }) => {
-      const task = tasks.find(t => t.id === params.id)
+    // GET /api/pets/:id - Get specific pet details
+    .get('/:id', async ({ params, set }) => {
+      const pet = await db.query.pets.findFirst({
+        where: eq(schema.pets.id, params.id),
+        with: {
+            owner: true
+        }
+      });
       
-      if (!task) {
+      if (!pet) {
         set.status = 404
-        return { message: 'Task not found' }
+        return { message: 'Pet not found' }
       }
       
-      return task
+      return pet
     }, {
-      detail: { summary: 'Get a specific task' },
+      detail: { summary: 'Retrieve pet details by ID' },
       params: t.Object({
-        id: t.Numeric()
+        id: t.Numeric({ example: 1 })
       })
     })
   )
