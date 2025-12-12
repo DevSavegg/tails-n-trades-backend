@@ -5,9 +5,15 @@
     "migrate": "npx @better-auth/cli migrate",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
+
     "db:generate": "drizzle-kit generate --config=./src/configs/drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config=./src/configs/drizzle.config.ts",
-    "db:studio": "drizzle-kit studio --config=./src/configs/drizzle.config.ts"
+    "db:studio": "drizzle-kit studio --config=./src/configs/drizzle.config.ts",
+    
+    "docker:start": "./scripts/start.sh",
+    "docker:stop": "./scripts/stop.sh",
+    "docker:reset": "./scripts/reset.sh",
+    "docker:restart": "./scripts/restart.sh"
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.0",
