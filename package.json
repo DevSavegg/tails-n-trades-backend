@@ -9,11 +9,11 @@
     "db:generate": "drizzle-kit generate --config=./src/configs/drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config=./src/configs/drizzle.config.ts",
     "db:studio": "drizzle-kit studio --config=./src/configs/drizzle.config.ts",
-    
-    "docker:start": "./scripts/start.sh",
-    "docker:stop": "./scripts/stop.sh",
-    "docker:reset": "./scripts/reset.sh",
-    "docker:restart": "./scripts/restart.sh"
+
+    "docker:start": "bun scripts/ops.ts start",
+    "docker:stop": "bun scripts/ops.ts stop",
+    "docker:reset": "bun scripts/ops.ts reset",
+    "docker:restart": "bun scripts/ops.ts restart"
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.0",
