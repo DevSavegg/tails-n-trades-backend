@@ -1,5 +1,5 @@
 #!/bin/bash
-
+cd "$(dirname "$0")/.."
 set -e
 
 echo "[INFO] Starting System..."
@@ -10,7 +10,10 @@ echo "[WAIT] Waiting for containers to stabilize..."
 sleep 5
 
 echo "[TASK] Running Database Migrations..."
-docker exec -it tails_n_trades_backend npx @better-auth/cli migrate
+docker exec -it tails_n_trades_backend bun run db:migrate
+
+#echo "[TASK] Running Database Migrations..."
+#docker exec -it tails_n_trades_backend npx @better-auth/cli migrate
 
 echo "---------------------------------------------------"
 echo "[DONE] System is running!"
