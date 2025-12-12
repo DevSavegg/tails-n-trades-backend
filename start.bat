@@ -13,7 +13,8 @@ echo [WAIT] Waiting for containers to stabilize...
 timeout /t 5 /nobreak >nul
 
 echo [TASK] Running Database Migrations...
-docker exec -it tails_n_trades_backend npx @better-auth/cli migrate
+:: docker exec -it tails_n_trades_backend npx @better-auth/cli migrate
+docker exec -it tails_n_trades_backend bun run db:migrate
 
 echo.
 echo ---------------------------------------------------

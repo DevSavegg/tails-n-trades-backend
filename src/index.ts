@@ -10,15 +10,27 @@ const UserSchema = t.Object({
     name: t.String(),
     createdAt: t.String(),
     updatedAt: t.String(),
-    image: t.Optional(t.String())
+    image: t.Optional(t.Nullable(t.String())),
+    
+    role: t.Optional(t.String()),
+    phoneNumber: t.Optional(t.Nullable(t.String())),
+    
+    banned: t.Optional(t.Boolean()),
+    banReason: t.Optional(t.Nullable(t.String())),
+    banExpires: t.Optional(t.Nullable(t.String()))
 })
 
 const SessionSchema = t.Object({
     id: t.String(),
     userId: t.String(),
     expiresAt: t.String(),
-    ipAddress: t.Optional(t.String()),
-    userAgent: t.Optional(t.String())
+    
+    token: t.String(),
+    createdAt: t.String(),
+    updatedAt: t.String(),
+    
+    ipAddress: t.Optional(t.Nullable(t.String())),
+    userAgent: t.Optional(t.Nullable(t.String()))
 })
 
 const AuthResponse = t.Object({
@@ -29,10 +41,12 @@ const AuthResponse = t.Object({
 const taskList: Array<{ id: number, title: string, completed: boolean, createdBy: string }> = []
 
 const forwardToAuth = (request: Request, body: any) => {
+    const newBody = typeof body === 'object' ? JSON.stringify(body) : body;
+    
     return auth.handler(new Request(request.url, {
         method: request.method,
         headers: request.headers,
-        body: JSON.stringify(body),
+        body: newBody,
     }));
 }
 
@@ -65,7 +79,8 @@ const app = new Elysia()
               name: t.String({ example: 'John Doe' }),
               email: t.String({ format: 'email', example: 'john@example.com' }),
               password: t.String({ minLength: 8, example: 'secret123' }),
-              image: t.Optional(t.String())
+              image: t.Optional(t.String()),
+              phoneNumber: t.Optional(t.String({ example: '+1234567890' }))
           }),
           response: {
               200: AuthResponse,
