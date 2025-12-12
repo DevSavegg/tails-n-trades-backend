@@ -4,10 +4,14 @@ setlocal
 
 set "securityCode=%RANDOM%"
 
+echo ---------------------------------------------------
+echo [WARN] DANGER ZONE
 echo [WARN] You are about to DESTROY containers and PERMANENTLY DELETE volumes (Database Data).
-echo [WARN] To confirm, please type the following security code: %securityCode%
+echo ---------------------------------------------------
+echo To confirm, please type the following security code: %securityCode%
 echo.
 
+set "userInput="
 set /p "userInput=Enter Code: "
 
 if "%userInput%" neq "%securityCode%" (

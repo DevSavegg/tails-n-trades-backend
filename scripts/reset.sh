@@ -2,7 +2,12 @@
 cd "$(dirname "$0")/.."
 set -e
 
-SECURITY_CODE=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 6)
+SECURITY_CODE=$(head -c 500 /dev/urandom | LC_ALL=C tr -dc 'A-Za-z0-9' | head -c 6)
+
+if [ -z "$SECURITY_CODE" ] || [ ${#SECURITY_CODE} -lt 6 ]; then
+    echo "[ERROR] Failed to generate security code. Aborting for safety."
+    exit 1
+fi
 
 echo "---------------------------------------------------"
 echo "[WARN] DANGER ZONE"
