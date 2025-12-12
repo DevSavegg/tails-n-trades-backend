@@ -46,6 +46,7 @@ services:
     image: dpage/pgadmin4
     container_name: tails_n_trades_pgadmin
     restart: always
+    platform: linux/amd64
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
@@ -58,7 +59,7 @@ services:
 
   # Redis Service
   redis:
-    image: redis:8-alpine
+    image: redis:7-alpine
     container_name: tails_n_trades_redis
     restart: always
     command: redis-server --appendonly yes
@@ -66,6 +67,19 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+
+  # Redis UI (Redis Commander)
+  redis-ui:
+    image: rediscommander/redis-commander:latest
+    container_name: tails_n_trades_redis_ui
+    restart: always
+    platform: linux/amd64
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
 
   # RabbitMQ Service
   rabbitmq:
