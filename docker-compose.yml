@@ -17,6 +17,8 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
+      LOG_LEVEL: ${LOG_LEVEL}
+      NODE_ENV: ${NODE_ENV}
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       REDIS_URL: redis://redis:6379
       RABBITMQ_URL: amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
