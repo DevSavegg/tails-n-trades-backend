@@ -1,5 +1,7 @@
+// src/modules/sales/models/schema.ts
+
 import { pgSchema, serial, text, varchar, integer, timestamp, pgEnum } from 'drizzle-orm/pg-core';
-import { user } from '../../users/models/schema';
+import { user } from '../../auth/models/schema';
 import { pets } from '../../catalog/models/schema';
 
 export const salesSchema = pgSchema('sales');

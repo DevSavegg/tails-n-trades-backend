@@ -1,6 +1,8 @@
+// src/modules/catalog/models/relations.ts
+
 import { relations } from 'drizzle-orm';
 import { pets, petImages } from './schema';
-import { user } from '../../users/models/schema';
+import { user } from '../../auth/models/schema';
 import { orderItems } from '../../sales/models/schema';
 import { bookings } from '../../caretaking/models/schema';
 

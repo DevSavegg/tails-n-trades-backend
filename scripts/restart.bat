@@ -24,7 +24,7 @@ echo.
 echo ---------------------------------------------------
 echo [DONE] System Restarted Successfully!
 echo        ^> App:        http://localhost:3000
-echo        ^> Swagger UI: http://localhost:3000/swagger
+echo        ^> Swagger UI: http://localhost:3000/api/docs
 echo ---------------------------------------------------
 echo.
 pause

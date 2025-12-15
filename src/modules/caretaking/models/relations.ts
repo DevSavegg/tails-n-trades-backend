@@ -1,6 +1,8 @@
+// src/modules/caretaking/models/relations.ts
+
 import { relations } from 'drizzle-orm';
 import { services, bookings, logs } from './schema';
-import { user } from '../../users/models/schema';
+import { user } from '../../auth/models/schema';
 import { pets } from '../../catalog/models/schema';
 
 export const servicesRelations = relations(services, ({ one, many }) => ({

@@ -18,5 +18,5 @@ docker exec -it tails_n_trades_backend bun run db:migrate
 echo "---------------------------------------------------"
 echo "[DONE] System is running!"
 echo "       > App:        http://localhost:3000"
-echo "       > Swagger UI: http://localhost:3000/swagger"
+echo "       > Swagger UI: http://localhost:3000/api/docs"
 echo "---------------------------------------------------"

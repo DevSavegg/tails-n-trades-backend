@@ -30,15 +30,6 @@ CREATE TABLE "auth"."account" (
 	"updated_at" timestamp NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "auth"."profiles" (
-	"user_id" text PRIMARY KEY NOT NULL,
-	"bio" text,
-	"phone_number" varchar(20),
-	"address_city" text,
-	"seller_rating" integer DEFAULT 0,
-	"seller_verified" boolean DEFAULT false
-);
---> statement-breakpoint
 CREATE TABLE "auth"."session" (
 	"id" text PRIMARY KEY NOT NULL,
 	"expires_at" timestamp NOT NULL,
@@ -59,7 +50,7 @@ CREATE TABLE "auth"."user" (
 	"image" text,
 	"created_at" timestamp NOT NULL,
 	"updated_at" timestamp NOT NULL,
-	"role" "role" DEFAULT 'customer' NOT NULL,
+	"roles" text[] DEFAULT ARRAY['customer']::text[] NOT NULL,
 	"banned" boolean DEFAULT false,
 	"ban_reason" text,
 	"ban_expires" timestamp,
@@ -73,6 +64,15 @@ CREATE TABLE "auth"."verification" (
 	"expires_at" timestamp NOT NULL,
 	"created_at" timestamp,
 	"updated_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "auth"."profiles" (
+	"user_id" text PRIMARY KEY NOT NULL,
+	"bio" text,
+	"phone_number" varchar(20),
+	"address_city" text,
+	"seller_rating" integer DEFAULT 0,
+	"seller_verified" boolean DEFAULT false
 );
 --> statement-breakpoint
 CREATE TABLE "catalog"."pet_images" (
@@ -167,8 +167,8 @@ CREATE TABLE "community"."posts" (
 );
 --> statement-breakpoint
 ALTER TABLE "auth"."account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "auth"."profiles" ADD CONSTRAINT "profiles_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "auth"."session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "auth"."profiles" ADD CONSTRAINT "profiles_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "catalog"."pet_images" ADD CONSTRAINT "pet_images_pet_id_pets_id_fk" FOREIGN KEY ("pet_id") REFERENCES "catalog"."pets"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "catalog"."pets" ADD CONSTRAINT "pets_owner_id_user_id_fk" FOREIGN KEY ("owner_id") REFERENCES "auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "sales"."order_items" ADD CONSTRAINT "order_items_order_id_orders_id_fk" FOREIGN KEY ("order_id") REFERENCES "sales"."orders"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

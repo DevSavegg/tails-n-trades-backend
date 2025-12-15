@@ -1,9 +1,11 @@
+// src/modules/auth/lib/auth-client.ts
+
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import Redis from 'ioredis';
 import { admin } from 'better-auth/plugins';
-import { db } from '../db/index_db';
-import * as schema from '../db/schema';
+import { db } from '../../../shared/db/index_db';
+import * as authSchema from '../models/schema';
 
 const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
 
@@ -14,19 +16,19 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema: {
-      user: schema.user,
-      session: schema.session,
-      account: schema.account,
-      verification: schema.verification,
+      user: authSchema.user,
+      session: authSchema.session,
+      account: authSchema.account,
+      verification: authSchema.verification,
     },
   }),
 
   user: {
     additionalFields: {
-      role: {
-        type: 'string',
+      roles: {
+        type: 'string[]',
         required: false,
-        defaultValue: 'customer',
+        defaultValue: ['customer'],
         input: false,
       },
     },
@@ -54,9 +56,9 @@ export const auth = betterAuth({
   },
 
   plugins: [
-    admin({
-      defaultRole: 'customer',
-      adminRole: 'admin',
-    }),
+    // admin({
+    //   defaultRole: 'customer',
+    //   adminRole: 'admin',
+    // }),
   ],
 });

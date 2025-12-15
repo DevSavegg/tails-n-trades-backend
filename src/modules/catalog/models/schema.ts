@@ -1,3 +1,5 @@
+// src/modules/catalog/models/schema.ts
+
 import {
   pgSchema,
   serial,
@@ -10,7 +12,7 @@ import {
   pgEnum,
   index,
 } from 'drizzle-orm/pg-core';
-import { user } from '../../users/models/schema';
+import { user } from '../../auth/models/schema';
 
 export const catalogSchema = pgSchema('catalog');
 

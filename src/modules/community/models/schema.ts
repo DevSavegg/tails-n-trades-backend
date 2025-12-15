@@ -1,5 +1,7 @@
+// src/modules/community/models/schema.ts
+
 import { pgSchema, serial, text, varchar, integer, timestamp } from 'drizzle-orm/pg-core';
-import { user } from '../../users/models/schema';
+import { user } from '../../auth/models/schema';
 import { petTypeEnum } from '../../catalog/models/schema';
 
 export const communitySchema = pgSchema('community');

@@ -1,3 +1,5 @@
+// src/modules/caretaking/models/schema.ts
+
 import {
   pgSchema,
   serial,
@@ -9,7 +11,7 @@ import {
   jsonb,
   pgEnum,
 } from 'drizzle-orm/pg-core';
-import { user } from '../../users/models/schema';
+import { user } from '../../auth/models/schema';
 import { pets } from '../../catalog/models/schema';
 
 export const caretakingSchema = pgSchema('caretaking');
