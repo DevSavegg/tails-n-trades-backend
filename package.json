@@ -5,10 +5,13 @@
     "migrate": "npx @better-auth/cli migrate",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
-
+    
     "db:generate": "drizzle-kit generate --config=./src/configs/drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config=./src/configs/drizzle.config.ts",
     "db:studio": "drizzle-kit studio --config=./src/configs/drizzle.config.ts",
+
+    "db:docker:migrate": "docker exec -it tails-n-trades-backend-server bun run db:migrate",
+    "db:docker:studio": "docker exec -it tails-n-trades-backend-server bun run db:studio --host 0.0.0.0",
 
     "docker:start": "bun scripts/ops.ts start",
     "docker:stop": "bun scripts/ops.ts stop",
@@ -18,7 +21,9 @@
   "dependencies": {
     "@elysiajs/cors": "^1.4.0",
     "@elysiajs/swagger": "^1.3.1",
+    "@types/amqplib": "^0.10.8",
     "@types/pg": "^8.16.0",
+    "amqplib": "^0.10.9",
     "better-auth": "^1.4.6",
     "drizzle-kit": "^x.x.x",
     "drizzle-orm": "^0.45.1",

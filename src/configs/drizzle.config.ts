@@ -1,4 +1,3 @@
-// drizzle.config.ts
 import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
@@ -8,7 +7,7 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-  schemaFilter: ["public", "auth", "catalog", "sales", "caretaking"], 
+  schemaFilter: ["public", "auth", "catalog", "sales", "caretaking", "community"], 
   verbose: true,
   strict: true,
 });

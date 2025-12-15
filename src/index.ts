@@ -37,9 +37,9 @@ const PetSchema = t.Object({
     id: t.Number(),
     ownerId: t.String(),
     name: t.String(),
-    category: t.String(),
+    type: t.String(),
     priceCents: t.Number(),
-    status: t.Nullable(t.String()),
+    status: t.String(),
     createdAt: t.Nullable(t.Date()),
 })
 
@@ -131,7 +131,7 @@ const app = new Elysia()
 
       const [newPet] = await db.insert(schema.pets).values({
         name: body.name,
-        category: body.category,
+        type: body.type as any, 
         priceCents: body.priceCents,
         ownerId: user.id,
         status: 'available',
@@ -143,7 +143,15 @@ const app = new Elysia()
       detail: { summary: 'Create a new pet listing' },
       body: t.Object({
         name: t.String({ minLength: 2, example: 'Golden Retriever' }),
-        category: t.String({ example: 'Dogs' }),
+        type: t.Union([
+            t.Literal('dog'),
+            t.Literal('cat'),
+            t.Literal('bird'),
+            t.Literal('fish'),
+            t.Literal('reptile'),
+            t.Literal('insect'),
+            t.Literal('exotic')
+        ]),
         priceCents: t.Number({ minimum: 0, example: 50000 })
       }),
       response: {
@@ -166,7 +174,7 @@ const app = new Elysia()
         return { message: 'Pet not found' }
       }
       
-      return pet
+      return pet;
     }, {
       detail: { summary: 'Retrieve pet details by ID' },
       params: t.Object({
