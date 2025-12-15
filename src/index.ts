@@ -5,9 +5,9 @@ import { eq } from 'drizzle-orm';
 import { auth } from './lib/auth';
 import { db } from './db/index_db';
 import * as schema from './db/schema';
+import { logger } from './lib/logger';
 
 // --- Response Schemas ---
-
 const PetSchema = t.Object({
   id: t.Number(),
   ownerId: t.String(),
@@ -31,6 +31,28 @@ const forwardToAuth = (request: Request, body: any) => {
 };
 
 const app = new Elysia()
+  // --- Global Logger Middleware ---
+  .onRequest(({ request }) => {
+    logger.info(
+      {
+        method: request.method,
+        url: request.url,
+      },
+      'Incoming Request'
+    );
+  })
+  .onError(({ error, request }) => {
+    logger.error(
+      {
+        err: error,
+        method: request.method,
+        url: request.url,
+      },
+      'Request Failed'
+    );
+  })
+  .derive(() => ({ logger }))
+
   .use(
     cors({
       origin: 'http://localhost:8080',
@@ -99,7 +121,8 @@ const app = new Elysia()
       // GET /api/pets - List all pets from DB
       .get(
         '/',
-        async () => {
+        async ({ logger }) => {
+          logger.debug('Fetching all pets');
           const allPets = await db.select().from(schema.pets);
           return allPets;
         },
@@ -112,11 +135,14 @@ const app = new Elysia()
       // POST /api/pets - Create a pet
       .post(
         '/',
-        async ({ body, user, set }) => {
+        async ({ body, user, set, logger }) => {
           if (!user) {
             set.status = 401;
+            logger.warn('Unauthorized attempt to create pet');
             return { message: 'Unauthorized: You must be logged in to list a pet.' };
           }
+
+          logger.info({ userId: user.id, petName: body.name }, 'Creating new pet');
 
           const [newPet] = await db
             .insert(schema.pets)
@@ -157,7 +183,7 @@ const app = new Elysia()
       // GET /api/pets/:id - Get specific pet details
       .get(
         '/:id',
-        async ({ params, set }) => {
+        async ({ params, set, logger }) => {
           const pet = await db.query.pets.findFirst({
             where: eq(schema.pets.id, params.id),
             with: {
@@ -167,6 +193,7 @@ const app = new Elysia()
 
           if (!pet) {
             set.status = 404;
+            logger.warn({ petId: params.id }, 'Pet lookup failed: not found');
             return { message: 'Pet not found' };
           }
 
@@ -182,4 +209,4 @@ const app = new Elysia()
   )
   .listen(3000);
 
-console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
+logger.info(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
