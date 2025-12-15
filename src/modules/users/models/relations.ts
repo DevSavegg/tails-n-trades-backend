@@ -1,10 +1,10 @@
-import { relations } from "drizzle-orm";
-import { user, session, account, profiles } from "./schema";
+import { relations } from 'drizzle-orm';
+import { user, session, account, profiles } from './schema';
 
-import { pets } from "../../catalog/models/schema";
-import { orders } from "../../sales/models/schema";
-import { services, bookings } from "../../caretaking/models/schema";
-import { posts, comments } from "../../community/models/schema";
+import { pets } from '../../catalog/models/schema';
+import { orders } from '../../sales/models/schema';
+import { services, bookings } from '../../caretaking/models/schema';
+import { posts, comments } from '../../community/models/schema';
 
 export const userRelations = relations(user, ({ one, many }) => ({
   // Internal Relations

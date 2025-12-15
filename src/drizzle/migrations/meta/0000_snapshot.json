@@ -94,12 +94,8 @@
           "tableFrom": "account",
           "tableTo": "user",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -160,12 +156,8 @@
           "tableFrom": "profiles",
           "tableTo": "user",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -236,12 +228,8 @@
           "tableFrom": "session",
           "tableTo": "user",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -251,9 +239,7 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {},
@@ -341,9 +327,7 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -436,12 +420,8 @@
           "tableFrom": "pet_images",
           "tableTo": "pets",
           "schemaTo": "catalog",
-          "columnsFrom": [
-            "pet_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["pet_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -568,12 +548,8 @@
           "tableFrom": "pets",
           "tableTo": "user",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -620,12 +596,8 @@
           "tableFrom": "order_items",
           "tableTo": "orders",
           "schemaTo": "sales",
-          "columnsFrom": [
-            "order_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["order_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -634,12 +606,8 @@
           "tableFrom": "order_items",
           "tableTo": "pets",
           "schemaTo": "catalog",
-          "columnsFrom": [
-            "pet_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["pet_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -707,12 +675,8 @@
           "tableFrom": "orders",
           "tableTo": "user",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "buyer_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["buyer_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -722,9 +686,7 @@
         "orders_stripe_payment_id_unique": {
           "name": "orders_stripe_payment_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "stripe_payment_id"
-          ]
+          "columns": ["stripe_payment_id"]
         }
       },
       "policies": {},
@@ -800,12 +762,8 @@
           "tableFrom": "bookings",
           "tableTo": "user",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "customer_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["customer_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -814,12 +772,8 @@
           "tableFrom": "bookings",
           "tableTo": "services",
           "schemaTo": "caretaking",
-          "columnsFrom": [
-            "service_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["service_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -828,12 +782,8 @@
           "tableFrom": "bookings",
           "tableTo": "pets",
           "schemaTo": "catalog",
-          "columnsFrom": [
-            "pet_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["pet_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -905,12 +855,8 @@
           "tableFrom": "logs",
           "tableTo": "bookings",
           "schemaTo": "caretaking",
-          "columnsFrom": [
-            "booking_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["booking_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -919,12 +865,8 @@
           "tableFrom": "logs",
           "tableTo": "user",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "author_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["author_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -998,12 +940,8 @@
           "tableFrom": "services",
           "tableTo": "user",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "provider_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["provider_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1057,12 +995,8 @@
           "tableFrom": "comments",
           "tableTo": "posts",
           "schemaTo": "community",
-          "columnsFrom": [
-            "post_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["post_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1071,12 +1005,8 @@
           "tableFrom": "comments",
           "tableTo": "user",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "author_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["author_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1144,12 +1074,8 @@
           "tableFrom": "posts",
           "tableTo": "user",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "author_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["author_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1165,71 +1091,32 @@
     "public.role": {
       "name": "role",
       "schema": "public",
-      "values": [
-        "customer",
-        "seller",
-        "caretaker",
-        "admin"
-      ]
+      "values": ["customer", "seller", "caretaker", "admin"]
     },
     "public.pet_status": {
       "name": "pet_status",
       "schema": "public",
-      "values": [
-        "available",
-        "pending",
-        "sold",
-        "care_stay",
-        "deceased"
-      ]
+      "values": ["available", "pending", "sold", "care_stay", "deceased"]
     },
     "public.pet_type": {
       "name": "pet_type",
       "schema": "public",
-      "values": [
-        "dog",
-        "cat",
-        "bird",
-        "fish",
-        "reptile",
-        "insect",
-        "exotic"
-      ]
+      "values": ["dog", "cat", "bird", "fish", "reptile", "insect", "exotic"]
     },
     "public.order_status": {
       "name": "order_status",
       "schema": "public",
-      "values": [
-        "pending_payment",
-        "paid",
-        "shipped",
-        "delivered",
-        "cancelled",
-        "refunded"
-      ]
+      "values": ["pending_payment", "paid", "shipped", "delivered", "cancelled", "refunded"]
     },
     "public.booking_status": {
       "name": "booking_status",
       "schema": "public",
-      "values": [
-        "pending",
-        "accepted",
-        "rejected",
-        "in_progress",
-        "completed",
-        "cancelled"
-      ]
+      "values": ["pending", "accepted", "rejected", "in_progress", "completed", "cancelled"]
     },
     "public.service_type": {
       "name": "service_type",
       "schema": "public",
-      "values": [
-        "boarding",
-        "grooming",
-        "training",
-        "medical_check",
-        "walking"
-      ]
+      "values": ["boarding", "grooming", "training", "medical_check", "walking"]
     }
   },
   "schemas": {

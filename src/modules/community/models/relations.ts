@@ -1,6 +1,6 @@
-import { relations } from "drizzle-orm";
-import { posts, comments } from "./schema";
-import { user } from "../../users/models/schema";
+import { relations } from 'drizzle-orm';
+import { posts, comments } from './schema';
+import { user } from '../../users/models/schema';
 
 export const postRelations = relations(posts, ({ one, many }) => ({
   author: one(user, {

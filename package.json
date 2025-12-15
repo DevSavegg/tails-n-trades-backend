@@ -5,18 +5,18 @@
     "migrate": "npx @better-auth/cli migrate",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
-    
     "db:generate": "drizzle-kit generate --config=./src/configs/drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config=./src/configs/drizzle.config.ts",
     "db:studio": "drizzle-kit studio --config=./src/configs/drizzle.config.ts",
-
     "db:docker:migrate": "docker exec -it tails-n-trades-backend-server bun run db:migrate",
     "db:docker:studio": "docker exec -it tails-n-trades-backend-server bun run db:studio --host 0.0.0.0",
-
     "docker:start": "bun scripts/ops.ts start",
     "docker:stop": "bun scripts/ops.ts stop",
     "docker:reset": "bun scripts/ops.ts reset",
-    "docker:restart": "bun scripts/ops.ts restart"
+    "docker:restart": "bun scripts/ops.ts restart",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.0",
@@ -42,5 +42,11 @@
   "private": true,
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "lint-staged": {
+    "**/*.{ts,js,tsx,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }

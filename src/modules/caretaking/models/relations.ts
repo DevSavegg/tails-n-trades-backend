@@ -1,7 +1,7 @@
-import { relations } from "drizzle-orm";
-import { services, bookings, logs } from "./schema";
-import { user } from "../../users/models/schema";
-import { pets } from "../../catalog/models/schema";
+import { relations } from 'drizzle-orm';
+import { services, bookings, logs } from './schema';
+import { user } from '../../users/models/schema';
+import { pets } from '../../catalog/models/schema';
 
 export const servicesRelations = relations(services, ({ one, many }) => ({
   provider: one(user, {

@@ -1,7 +1,7 @@
-import { relations } from "drizzle-orm";
-import { orders, orderItems } from "./schema";
-import { user } from "../../users/models/schema";
-import { pets } from "../../catalog/models/schema";
+import { relations } from 'drizzle-orm';
+import { orders, orderItems } from './schema';
+import { user } from '../../users/models/schema';
+import { pets } from '../../catalog/models/schema';
 
 export const ordersRelations = relations(orders, ({ one, many }) => ({
   buyer: one(user, {
