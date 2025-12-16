@@ -47,6 +47,19 @@ The backend infrastructure is architected upon a **Modular Monolith** design pat
 
 -----
 
+## File Upload Handling
+
+The application handles file uploads (user profiles, pet images) directly on the filesystem for simplicity and performance.
+
+*   **Storage Location:** files are stored in the `uploads/` directory in the project root.
+*   **Directory Structure:**
+    *   `uploads/profiles/`: User profile pictures.
+    *   `uploads/pets/`: Pet listing images.
+*   **Docker Persistence:** The `docker-compose.yml` defines a volume mount (`./uploads:/app/uploads`) to ensure files persist across container restarts.
+*   **Public Access:** Files are served via a dedicated `GET /uploads/*` route with CORS support.
+
+-----
+
 ## Deployment Procedures
 
 ### System Requirements

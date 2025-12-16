@@ -1,9 +1,11 @@
+import { join } from 'path';
 // src/index.ts
 
 import { Elysia } from 'elysia';
 import { cors } from '@elysiajs/cors';
 import { swagger } from '@elysiajs/swagger';
 import { logger } from './shared/lib/logger';
+import { staticPlugin } from '@elysiajs/static';
 
 // Controllers
 import { authController } from './modules/auth/controllers/auth.controller';
@@ -12,6 +14,7 @@ import { catalogController } from './modules/catalog/controllers/catalog.control
 import { caretakingController } from './modules/caretaking/controllers/caretaking.controller';
 import { salesController } from './modules/sales/controllers/sales.controller';
 import { communityController } from './modules/community/controllers/community.controller';
+import { favoritesController } from './modules/favorites/controllers/favorites.controller';
 
 // Main Application
 const app = new Elysia()
@@ -37,15 +40,37 @@ const app = new Elysia()
   })
   .derive(() => ({ logger }))
 
+  // Ensure uploads directory exists
+  .onStart(async () => {
+    const uploadDir = join(process.cwd(), 'uploads');
+    const fs = await import('node:fs/promises');
+    await fs.mkdir(uploadDir, { recursive: true });
+  })
+
   // --- CORS ---
   .use(
     cors({
-      origin: 'http://localhost:8080',
+      origin: true,
       credentials: true,
       allowedHeaders: ['Content-Type', 'Authorization'],
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     })
   )
+  // --- Manual Static File Serving to bypass staticPlugin issues ---
+  .get('/uploads/*', async ({ params, set }) => {
+    const pathPart = params['*'];
+    const file = Bun.file(join(process.cwd(), 'uploads', pathPart));
+
+    const exists = await file.exists();
+    if (!exists) {
+      set.status = 404;
+      return { error: 'File not found' };
+    }
+
+    set.headers['Access-Control-Allow-Origin'] = '*';
+    set.headers['Cache-Control'] = 'public, max-age=86400';
+    return file;
+  })
 
   // --- API Group ---
   .group('/api', (app) =>
@@ -89,11 +114,29 @@ const app = new Elysia()
       .use(caretakingController)
       .use(salesController)
       .use(communityController)
-  )
+      .use(favoritesController)
+      .get('/debug-files', async () => {
+        const fs = await import('node:fs/promises');
+        const join = (await import('path')).join;
+        try {
+          const cwd = process.cwd();
+          const uploadDir = join(cwd, 'uploads', 'profiles');
+          const files = await fs.readdir(uploadDir);
+          return {
+            cwd,
+            uploadDir,
+            files,
+            exists: true,
+          };
+        } catch (e: any) {
+          return { error: e.message, code: e.code, stack: e.stack };
+        }
+      })
+  );
 
-  .listen(3000, () => {
-    logger.info('Server is running on http://localhost:3000');
-  });
+app.listen(3000, () => {
+  logger.info('Server is running on http://localhost:3000');
+});
 
 export type AppType = typeof app;
 

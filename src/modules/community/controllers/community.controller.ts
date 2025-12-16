@@ -23,9 +23,8 @@ export const communityController = new Elysia({ prefix: '/community' }).guard(
             query: t.Object({
               type: t.Optional(
                 t.String({
-                  default: 'general',
-                  examples: ['general', 'looking_for', 'advice'],
-                  description: 'Filter posts by category',
+                  examples: ['Dog', 'Cat'],
+                  description: 'Filter posts by pet type',
                 })
               ),
             }),
@@ -83,8 +82,7 @@ export const communityController = new Elysia({ prefix: '/community' }).guard(
               }),
               lookingForType: t.Optional(
                 t.String({
-                  default: 'advice',
-                  examples: ['advice', 'service'],
+                  examples: ['Dog', 'Cat'],
                 })
               ),
             }),

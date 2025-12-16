@@ -9,19 +9,21 @@ import * as authSchema from '../models/schema';
 
 const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
 
+const baseAdapter = drizzleAdapter(db, {
+  provider: 'pg',
+  schema: {
+    user: authSchema.user,
+    session: authSchema.session,
+    account: authSchema.account,
+    verification: authSchema.verification,
+  },
+});
+
 export const auth = betterAuth({
   baseURL: 'http://localhost:3000/api/auth',
   trustedOrigins: ['http://localhost:8080'],
 
-  database: drizzleAdapter(db, {
-    provider: 'pg',
-    schema: {
-      user: authSchema.user,
-      session: authSchema.session,
-      account: authSchema.account,
-      verification: authSchema.verification,
-    },
-  }),
+  database: baseAdapter,
 
   user: {
     additionalFields: {

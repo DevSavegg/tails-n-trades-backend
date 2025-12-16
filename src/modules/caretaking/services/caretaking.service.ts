@@ -1,9 +1,11 @@
 // src/modules/caretaking/services/caretaking.service.ts
 
-import { eq, and, desc, gte, lte } from 'drizzle-orm';
+import { eq, and, desc, gte, lte, ilike } from 'drizzle-orm';
 import { db } from '../../../shared/db/index_db';
 import { services, bookings, logs, serviceTypeEnum, bookingStatusEnum } from '../models/schema';
 import { pets } from '../../catalog/models/schema';
+import { profiles } from '../../users/models/schema';
+import { user as userTable } from '../../auth/models/schema';
 
 export class CaretakingService {
   // --- Service Management ---
@@ -20,21 +22,87 @@ export class CaretakingService {
     return newService;
   }
 
-  async getServices(filters: { type?: string }) {
-    const conditions = [eq(services.isActive, true)];
-
-    if (filters.type) {
-      conditions.push(eq(services.type, filters.type as any));
-    }
-
-    return await db.query.services.findMany({
-      where: and(...conditions),
+  async getServices(filters: { type?: string; city?: string; providerId?: string }) {
+    // simplified query using relations
+    let results = await db.query.services.findMany({
+      where: (services, { eq, and }) => {
+        const conditions = [eq(services.isActive, true)];
+        if (filters.type) {
+          conditions.push(eq(services.type, filters.type as any));
+        }
+        if (filters.providerId) {
+          conditions.push(eq(services.providerId, filters.providerId));
+        }
+        return and(...conditions);
+      },
       with: {
         provider: {
           columns: { id: true, name: true, image: true },
+          with: {
+            profile: true,
+          },
         },
       },
     });
+
+    // In-memory filtering for city if needed (Relation queries don't easily support deep where filtering)
+    if (filters.city) {
+      const cityLower = filters.city.toLowerCase();
+      results = results.filter((r) =>
+        r.provider?.profile?.addressCity?.toLowerCase().includes(cityLower)
+      );
+    }
+
+    return results.map((row) => ({
+      ...row,
+      provider: row.provider,
+      location: row.provider?.profile?.addressCity || 'Unknown Location',
+    }));
+  }
+
+  // --- Service Updates ---
+
+  async updateService(
+    serviceId: number,
+    providerId: string,
+    data: Partial<typeof services.$inferInsert>
+  ) {
+    // Verify ownership
+    const service = await db.query.services.findFirst({
+      where: eq(services.id, serviceId),
+    });
+
+    if (!service || service.providerId !== providerId) {
+      throw new Error('Unauthorized or Service not found');
+    }
+
+    const [updated] = await db
+      .update(services)
+      .set(data)
+      .where(eq(services.id, serviceId))
+      .returning();
+
+    return updated;
+  }
+
+  async deleteService(serviceId: number, providerId: string) {
+    // Verify ownership
+    const service = await db.query.services.findFirst({
+      where: eq(services.id, serviceId),
+    });
+
+    if (!service || service.providerId !== providerId) {
+      throw new Error('Unauthorized or Service not found');
+    }
+
+    // Soft delete (set isActive = false)
+    const [updated] = await db
+      .update(services)
+      .set({ isActive: false })
+      .where(eq(services.id, serviceId))
+      .returning();
+
+    return updated;
   }
 
   // --- Booking Logic ---

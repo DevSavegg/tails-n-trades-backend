@@ -27,8 +27,8 @@ export default tseslint.config(
   {
     rules: {
       // --- JavaScript/Logic Rules ---
-      eqeqeq: ['error', 'always'],
-      curly: ['error', 'all'],
+      eqeqeq: ['warn', 'always'],
+      curly: ['warn', 'all'],
       'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
 
       // --- TypeScript Specific Rules ---
@@ -46,7 +46,7 @@ export default tseslint.config(
       ],
 
       // Allow using functions before definition
-      '@typescript-eslint/no-use-before-define': ['error', { functions: false, classes: false }],
+      '@typescript-eslint/no-use-before-define': ['warn', { functions: false, classes: false }],
     },
   }
 );

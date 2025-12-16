@@ -23,3 +23,6 @@ export * from '../../modules/caretaking/models/relations';
 // --- Community ---
 export * from '../../modules/community/models/schema';
 export * from '../../modules/community/models/relations';
+
+// --- Favorites ---
+export * from '../../modules/favorites/models/schema';

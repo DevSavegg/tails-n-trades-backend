@@ -39,6 +39,18 @@ export const authController = new Elysia({ prefix: '/auth' })
         .post(
           '/sign-up/email',
           async ({ request, body }) => {
+            if (!body.image) {
+              try {
+                const { generateProfileImage } = await import('../lib/profile-generator');
+                // Use name for initials
+                body.image = await generateProfileImage(body.name || body.email);
+              } catch (e) {
+                // Fallback to URL if generation fails (though generator handles errors)
+                const seed = encodeURIComponent(body.name || 'default');
+                body.image = `https://api.dicebear.com/9.x/miniavs/svg?seed=${seed}`;
+              }
+            }
+
             const newReq = new Request(request.url, {
               method: request.method,
               headers: request.headers,

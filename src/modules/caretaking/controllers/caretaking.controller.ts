@@ -24,15 +24,28 @@ export const caretakingController = new Elysia({ prefix: '/caretaking' }).guard(
             async ({ query }) => {
               return await caretakingService.getServices({
                 type: query.type,
+                city: query.city,
+                providerId: query.providerId,
               });
             },
             {
               query: t.Object({
                 type: t.Optional(
                   t.String({
-                    default: 'grooming',
+                    // Removed default to allow 'undefined' (all types)
                     examples: ['grooming', 'boarding'],
                     description: 'Filter services by type',
+                  })
+                ),
+                city: t.Optional(
+                  t.String({
+                    description: 'Filter by city (partial match)',
+                    examples: ['Bangkok', 'Chiang Mai'],
+                  })
+                ),
+                providerId: t.Optional(
+                  t.String({
+                    description: 'Filter by provider ID',
                   })
                 ),
               }),
@@ -79,6 +92,57 @@ export const caretakingController = new Elysia({ prefix: '/caretaking' }).guard(
               detail: {
                 summary: 'Create Service Listing',
               },
+            }
+          )
+
+          .delete(
+            '/:id',
+            async ({ user, params, set }) => {
+              try {
+                return await caretakingService.deleteService(Number(params.id), user.id);
+              } catch (e: any) {
+                set.status = 403;
+                return e.message;
+              }
+            },
+            {
+              params: t.Object({ id: t.String() }),
+              detail: { summary: 'Delete (Deactivate) Service' },
+            }
+          )
+
+          .patch(
+            '/:id',
+            async ({ user, params, body, set }) => {
+              try {
+                return await caretakingService.updateService(
+                  Number(params.id),
+                  user.id,
+                  body as any
+                );
+              } catch (e: any) {
+                set.status = 403;
+                return e.message;
+              }
+            },
+            {
+              params: t.Object({ id: t.String() }),
+              body: t.Object({
+                title: t.Optional(t.String()),
+                description: t.Optional(t.String()),
+                type: t.Optional(
+                  t.Enum({
+                    boarding: 'boarding',
+                    grooming: 'grooming',
+                    training: 'training',
+                    medical_check: 'medical_check',
+                    walking: 'walking',
+                  })
+                ),
+                basePriceCents: t.Optional(t.Number()),
+                isActive: t.Optional(t.Boolean()),
+              }),
+              detail: { summary: 'Update Service' },
             }
           )
       )

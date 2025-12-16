@@ -1,8 +1,9 @@
 // src/modules/community/services/community.service.ts
 
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc, and, sql } from 'drizzle-orm';
 import { db } from '../../../shared/db/index_db';
 import { posts, comments } from '../models/schema';
+import { user } from '../../auth/models/schema';
 import { petTypeEnum } from '../../catalog/models/schema';
 
 export class CommunityService {
@@ -11,39 +12,43 @@ export class CommunityService {
    */
   async getPosts(filterType?: (typeof petTypeEnum.enumValues)[number]) {
     const conditions = [];
-    if (filterType) {
+
+    // Validate filterType against enum to prevents crashes if 'general' or other invalid values are passed
+    const validTypes = petTypeEnum.enumValues;
+    if (filterType && validTypes.includes(filterType as any)) {
       conditions.push(eq(posts.lookingForType, filterType));
+    } else if (filterType) {
+      console.warn(`Invalid filterType '${filterType}' ignored. Allowed: ${validTypes.join(', ')}`);
     }
 
-    const allPosts = await db.query.posts.findMany({
-      where: conditions.length ? and(...conditions) : undefined,
-      with: {
+    // Use db.select() to avoid complex lateral joins that might fail on some Postgres versions/configs
+    const rows = await db
+      .select({
+        post: posts,
         author: {
-          columns: {
-            id: true,
-            name: true,
-            image: true,
-            roles: true,
-          },
+          id: user.id,
+          name: user.name,
+          image: user.image,
+          roles: user.roles,
         },
-        comments: {
-          with: {
-            author: {
-              columns: {
-                id: true,
-                name: true,
-                image: true,
-              },
-            },
-          },
-          orderBy: [desc(comments.createdAt)],
-          limit: 3,
-        },
-      },
-      orderBy: [desc(posts.createdAt)],
-    });
+        commentCount: sql<number>`count(${comments.id})`.mapWith(Number),
+      })
+      .from(posts)
+      .leftJoin(user, eq(posts.authorId, user.id))
+      .leftJoin(comments, eq(comments.postId, posts.id))
+      .where(conditions.length ? and(...conditions) : undefined)
+      .groupBy(posts.id, user.id)
+      .orderBy(desc(posts.createdAt));
 
-    return allPosts;
+    // Map to expected structure
+    return rows.map((row) => ({
+      ...row.post,
+      author: row.author,
+      _count: {
+        comments: row.commentCount,
+      },
+      comments: [], // Frontend doesn't show comments in feed, only count
+    }));
   }
 
   /**

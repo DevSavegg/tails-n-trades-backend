@@ -8,6 +8,13 @@
       "when": 1765825598996,
       "tag": "0000_lonely_tattoo",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1765894497766,
+      "tag": "0001_lyrical_scarlet_witch",
+      "breakpoints": true
     }
   ]
 }
